@@ -109,10 +109,16 @@ def Ht(z, t, dps, KMAX, nodes):
     """H_t(z) = E[ xi(1/2 + sqrt(2t) V + i z) ], V~N(0,1), via Gauss-Hermite (mp)."""
     mp.mp.dps = dps
     z = mp.mpc(z)
+<<<<<<< HEAD
     t = mp.mpf(t)                      # NE PAS passer par float : casserait les petits pas en t
     if t <= 0:
         return xi(mp.mpf('0.5') + 1j * z, KMAX)
     sig = mp.sqrt(2 * t)
+=======
+    if float(t) <= 0:
+        return xi(mp.mpf('0.5') + 1j * z, KMAX)
+    sig = mp.sqrt(2 * mp.mpf(t))
+>>>>>>> bb725e4 (add dbn-weil)
     xs, ws = nodes
     half = mp.mpf('0.5')
     acc = mp.mpf(0)
@@ -184,7 +190,11 @@ def mode_collision(t0, z0, dps=50, NGH=48, maxit=12):
     print(f"# COLLISION (zero double)  dps={dps}, KMAX={KMAX}, GH={NGH}")
     print(f"#   graine (t, z*) = ({t0}, {z0})")
     def H(tt, zz):
+<<<<<<< HEAD
         return mp.re(Ht(mp.mpc(zz, 0), tt, dps, KMAX, nodes))
+=======
+        return mp.re(Ht(mp.mpc(zz, 0), float(tt), dps, KMAX, nodes))
+>>>>>>> bb725e4 (add dbn-weil)
     t = mp.mpf(str(t0)); z = mp.mpf(str(z0))
     for it in range(maxit):
         H00 = H(t, z)
@@ -226,4 +236,8 @@ if __name__ == "__main__":
         NGH = int(a[4]) if len(a) > 4 else 48
         mode_collision(t0, z0, dps, NGH)
     else:
+<<<<<<< HEAD
         print(__doc__)
+=======
+        print(__doc__)
+>>>>>>> bb725e4 (add dbn-weil)
