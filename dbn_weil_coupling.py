@@ -26,10 +26,15 @@ Cross-check : a t=0 on doit retrouver lambda_min ~ -0.7045 (valeur de weil_local
 Depend de dbn_epstein.py (Ht, gh_nodes_mp) + numpy + mpmath.
 
 Usage :
+<<<<<<< Updated upstream
   python dbn_weil_coupling.py [T0 T1 NT dps NGH KMAX pw]
   recommande : python dbn_weil_coupling.py 0 0.0840 14 28 20 55 2
      T1 pres de Lambda_Q0=0.08431 ; grille concentree pres de la collision (pw=2).
      ~15-25 min CPU. Pour resserrer encore : T1=0.0842, NT=16, pw=2.5.
+=======
+  python dbn_weil_coupling.py [T0 T1 NT dps NGH KMAX]
+  defaut : 0 0.083 12 28 20 55   (~15-25 min CPU ; KMAX=55 suffit, baisser NT/NGH pour accelerer)
+>>>>>>> Stashed changes
 """
 import sys
 import cmath
@@ -60,7 +65,11 @@ def _seeds_real(x):
 def _seeds_cplx(z):
     e = mp.mpf('1e-4'); return (z, z + e, z + 1j * e)
 
+<<<<<<< Updated upstream
 def main(T0=0.0, T1=0.0840, NT=14, dps=28, NGH=20, KMAX=55, pw=2.0):
+=======
+def main(T0=0.0, T1=0.083, NT=12, dps=28, NGH=20, KMAX=55):
+>>>>>>> Stashed changes
     mp.mp.dps = dps
     nodes = gh_nodes_mp(NGH, dps)
     tol = mp.mpf(10) ** (-(dps - 12))
@@ -68,10 +77,15 @@ def main(T0=0.0, T1=0.0840, NT=14, dps=28, NGH=20, KMAX=55, pw=2.0):
     print(f"#   t in [{T0},{T1}], {NT} pas, dps={dps}, KMAX={KMAX}, GH={NGH}")
     print(f"#   nus = 14.0..18.5 (10), a = {A} ; {len(ONZ0)} zeros en-ligne + quadruplet, TOUS flottes")
     print(f"#   Lambda_Q0 (collision, ref) = 0.0843066945")
+<<<<<<< Updated upstream
     print(f"#   grille concentree pres de la collision (puissance {pw}); Lambda_Q0 ref = 0.0843066945")
     print(f"#   {'t':>9}  {'delta(t)':>13}  {'lambda_min(t)':>18}  {'-lam/delta^2':>13}")
     T0m, T1m = mp.mpf(T0), mp.mpf(T1)
     ts = [T1m - (T1m - T0m) * (mp.mpf(NT - 1 - i) / (NT - 1)) ** pw for i in range(NT)]
+=======
+    print(f"#   {'t':>9}  {'delta(t)':>13}  {'lambda_min(t)':>18}  {'-lam/delta^2':>13}")
+    ts = [mp.mpf(T0) + (mp.mpf(T1) - mp.mpf(T0)) * i / (NT - 1) for i in range(NT)]
+>>>>>>> Stashed changes
     zq = mp.mpc(MU0, DELTA0)                       # quadruplet : on suit mu + i*delta
     zon = [mp.mpf(str(g)) for g in ONZ0]           # zeros en-ligne (reels)
     rows = []
@@ -95,6 +109,7 @@ def main(T0=0.0, T1=0.0840, NT=14, dps=28, NGH=20, KMAX=55, pw=2.0):
         rij = (-lam / (d * d)) if d > 1e-9 else float('nan')
         print(f"  {float(tt):9.5f}  {d:13.8f}  {lam:18.10e}  {rij:13.6f}")
         rows.append((float(tt), d, lam))
+<<<<<<< Updated upstream
     # --- estimation du croisement lambda_min(t)=0 : deux methodes ---
     rows = np.array(rows)
     LAMQ0 = 0.08430669450968749
@@ -112,6 +127,18 @@ def main(T0=0.0, T1=0.0840, NT=14, dps=28, NGH=20, KMAX=55, pw=2.0):
             ec = 100 * (LAMQ0 - t_cross) / LAMQ0
             print(f"    {k:>4}  {cross_t:>12.6f}  {alpha:>+12.3e}  {t_cross:>17.6f}  {ec:>+8.2f}%")
     print(f"    (Lambda_Q0 = {LAMQ0:.12f} ; lambda0>0 => croisement legerement SOUS Lambda_Q0)")
+=======
+    # --- extrapolation lineaire de lambda_min(t) -> 0 (passage par Lambda_Q0) ---
+    rows = np.array(rows)
+    print("\n  Extrapolation lineaire  lambda_min(t) ~ s*(t - Lambda_Q0) :")
+    for k in (3, 4, 5):
+        if len(rows) >= k:
+            tt = rows[-k:, 0]; ll = rows[-k:, 2]
+            s, b = np.polyfit(tt, ll, 1)
+            cross = -b / s
+            print(f"    {k} derniers points : pente={s:+.4f}, lambda_min=0 en t = {cross:.6f}"
+                  f"   (Lambda_Q0 = 0.0843067)")
+>>>>>>> Stashed changes
 
 if __name__ == "__main__":
     a = sys.argv[1:]
@@ -120,7 +147,11 @@ if __name__ == "__main__":
         dps = int(a[3]) if len(a) > 3 else 28
         NGH = int(a[4]) if len(a) > 4 else 20
         KMAX = int(a[5]) if len(a) > 5 else 55
+<<<<<<< Updated upstream
         pw = float(a[6]) if len(a) > 6 else 2.0
         main(T0, T1, NT, dps, NGH, KMAX, pw)
+=======
+        main(T0, T1, NT, dps, NGH, KMAX)
+>>>>>>> Stashed changes
     else:
         main()
